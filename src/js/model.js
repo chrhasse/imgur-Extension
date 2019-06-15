@@ -528,7 +528,7 @@ function Model() {
 
     			}
 
-    			xhr.send("client_id=" + root.client_id + " &grant_type=refresh_token&refresh_token=" + DAL.get('OAuth2.refresh_token'));
+    			xhr.send("client_id=" + root.client_id + "&grant_type=refresh_token&refresh_token=" + DAL.get('OAuth2.refresh_token'));
 
     			return evtD;
 
