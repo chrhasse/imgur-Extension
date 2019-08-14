@@ -20,6 +20,6 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 Any questions flick me an [email](mailto:hasse.christopher@gmail.com)
 
-#Privacy Policy
+## Privacy Policy
 
 This extension's privacy policy may be found [here](https://github.com/chrhasse/imgur-Extension/blob/master/privacy.md)
