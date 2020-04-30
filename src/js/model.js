@@ -18,7 +18,15 @@ function Model() {
 	var root = this;
 	
 	this.isChrome = __PLATFORM__ == "chrome";
-	this.client_id = __CLIENT_ID__;
+    Object.defineProperty(this, 'client_id', { get: function() {
+        try {
+            if (this.preferences.get('usecustomapi')) {
+                return this.preferences.get('customapiid');
+            }
+        } catch (ex) {}
+
+        return __CLIENT_ID__;
+    }, configurable: true });
 
 	// ------------------------------------------------------------------
 	// Data Access Layer
@@ -186,6 +194,15 @@ function Model() {
 
     };
 
+	// ------------------------------------------------------------------
+	// 2.2.0 Upgrade DAL
+	// ------------------------------------------------------------------
+
+    if (DAL.get('preferences.usecustomapi') == null) {
+        DAL.set('preferences.usecustomapi', false)
+        DAL.set('preferences.customapiid','')
+        DAL.set('preferences.customapisecret','')
+    }
 	// ------------------------------------------------------------------
 	// Future testing to use this method
 	// ------------------------------------------------------------------
@@ -493,9 +510,14 @@ function Model() {
 					xhr = new XMLHttpRequest();
 
                 // AWS Lambda service for adding client_secret to token requests
-                xhr.open("POST", "https://bboekn8uf5.execute-api.us-west-2.amazonaws.com/default/ImgurRefreshToken", true);
-                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhr.setRequestHeader("x-api-key", "9nNKbbdDkYal7YhwqcDKS1M7VOZDjmWiachvl2ZP");
+                if (root.preferences.get('usecustomapi')) {
+                    xhr.open("POST", "https://api.imgur.com/oath2/token", true);
+                    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                } else {
+                    xhr.open("POST", "https://bboekn8uf5.execute-api.us-west-2.amazonaws.com/default/ImgurRefreshToken", true);
+                    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xhr.setRequestHeader("x-api-key", "9nNKbbdDkYal7YhwqcDKS1M7VOZDjmWiachvl2ZP");
+                }
 
     			xhr.onreadystatechange = function () {
 
@@ -528,7 +550,11 @@ function Model() {
 
     			}
 
-    			xhr.send("client_id=" + root.client_id + "&grant_type=refresh_token&refresh_token=" + DAL.get('OAuth2.refresh_token'));
+                if (root.preferences.get('usecustomapi')) {
+                    xhr.send("client_id=" + root.client_id + "&client_secret=" + root.preferences.get('customapisecret') + "&grant_type=refresh_token&refresh_token=" + DAL.get('OAuth2.refresh_token'));
+                } else {
+                    xhr.send("client_id=" + root.client_id + "&grant_type=refresh_token&refresh_token=" + DAL.get('OAuth2.refresh_token'));
+                }
 
     			return evtD;
 
