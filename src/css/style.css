@@ -507,6 +507,10 @@ a#nav-options {
         display: inline-block;
         width: 250px;
     }
+
+a#api-link {
+    color:#ffffff
+}
     
 #status-bar {
 	display: block;

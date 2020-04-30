@@ -70,6 +70,9 @@ window.onload = function () {
                 model.reset();
                 port.postMessage({ CMD: "sync" });
             } else {
+                ESubmit.value = "save changes";
+                ESubmit.style.cursor = "default";
+                EUseCustomApi.checked = model.preferences.get('usecustomapi');
                 return;
             }
         }
