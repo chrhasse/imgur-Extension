@@ -64,7 +64,6 @@ gulp.task("css", function(cb) {
 		gulp.src(src.css),
 		cache('css'),
 		autoprefixer({
-            browsers: ['last 2 versions'],
             cascade: false
         }),
 		cleanCSS(),
@@ -112,10 +111,9 @@ gulp.task("manifest", function(cb) {
 	
 });
 
-gulp.task("default", ["del"].concat(srcKeys), function() {
+gulp.task("default", gulp.series("del", gulp.parallel(srcKeys), function() {
 	
 	srcKeys.forEach(function(k) {
-		gulp.watch(src[k], [k]);
+		gulp.watch(src[k], gulp.series(k));
 	});
-
-});
+}));
