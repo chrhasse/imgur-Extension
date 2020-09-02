@@ -6,6 +6,8 @@
         isResizing = false,
         startPos;
 
+    overlay.id = "imgurExtensionOverlayElement"
+
     overlay.style.position = "absolute";
     overlay.style.width = "100%";
     overlay.style.height = "100%";
@@ -60,7 +62,9 @@
     function resetBody() {
         body.style.overflowY = body.prevOverflow;
     }
+
     function removeOverlay() {
+        overlay.hidden = true;
         body.removeChild(overlay);
     }
 
@@ -128,6 +132,12 @@
         overlay.style.cursor = "default";
     };
 
+    function waitfordomupdate(fn)
+    {
+        intermediate = function () {window.requestAnimationFrame(fn)}
+        window.requestAnimationFrame(intermediate)
+    }
+
     function submit() {
 
         if ("{%PLATFORM%}" == "chrome") {
@@ -148,12 +158,16 @@
 
         removeOverlay();
 
-        chrome.runtime.sendMessage({
-            CMD: 'got_area',
-            Data: obj
+        waitfordomupdate(function() {
+            chrome.runtime.sendMessage({
+                CMD: 'got_area',
+                Data: obj
+            });
+
+            setTimeout(resetBody, 50);
         });
 
-        setTimeout(resetBody, 50);
+
     }
 
 }());
